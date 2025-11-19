@@ -4,24 +4,9 @@ import { PlantAnalysisResult } from "../types";
 const MODEL_NAME = "gemini-2.5-flash";
 
 export const analyzePlantImage = async (base64Image: string): Promise<PlantAnalysisResult> => {
-  // 1. Validate API Key availability
-  // Safe access to process.env to avoid "ReferenceError: process is not defined" in strict browser environments
-  // The vite.config.ts should inject this, but this is a safety fallback.
-  let apiKey = "";
-  try {
-    if (typeof process !== "undefined" && process.env) {
-      apiKey = process.env.API_KEY || "";
-    }
-  } catch (e) {
-    console.warn("Error accessing process.env:", e);
-  }
-
-  if (!apiKey) {
-    throw new Error("API_KEY_MISSING");
-  }
-
-  // 2. Initialize AI Client lazily
-  const ai = new GoogleGenAI({ apiKey });
+  // Initialize AI Client
+  // The API key must be obtained exclusively from the environment variable process.env.API_KEY.
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   // 3. Prepare image data
   // Strip the data URL prefix if present to get raw base64
