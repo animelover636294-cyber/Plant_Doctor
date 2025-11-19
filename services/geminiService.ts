@@ -5,8 +5,17 @@ const MODEL_NAME = "gemini-2.5-flash";
 
 export const analyzePlantImage = async (base64Image: string): Promise<PlantAnalysisResult> => {
   // 1. Validate API Key availability
-  // We access process.env.API_KEY dynamically to prevent top-level crashes
-  const apiKey = process.env.API_KEY;
+  // Safe access to process.env to avoid "ReferenceError: process is not defined" in strict browser environments
+  // The vite.config.ts should inject this, but this is a safety fallback.
+  let apiKey = "";
+  try {
+    if (typeof process !== "undefined" && process.env) {
+      apiKey = process.env.API_KEY || "";
+    }
+  } catch (e) {
+    console.warn("Error accessing process.env:", e);
+  }
+
   if (!apiKey) {
     throw new Error("API_KEY_MISSING");
   }

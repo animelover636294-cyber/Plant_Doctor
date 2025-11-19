@@ -42,7 +42,7 @@ const App: React.FC = () => {
     } catch (err: any) {
       console.error(err);
       if (err.message === "API_KEY_MISSING") {
-        setError("System Configuration Error: API Key is missing. Please set the API_KEY environment variable in your deployment settings (e.g., Vercel).");
+        setError("Configuration Error: API Key is missing. Please add 'API_KEY' to your Vercel Environment Variables and redeploy.");
       } else {
         setError("Failed to analyze the image. Please check your internet connection or try a different image.");
       }
