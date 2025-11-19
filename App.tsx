@@ -54,28 +54,28 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="app-layout">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-green-50 to-white">
       <Header />
 
-      <main className="main-content">
+      <main className="flex-grow container mx-auto px-4 py-8 sm:px-6 lg:px-8 max-w-5xl">
         
         {/* Header Intro */}
         {appState === AppState.IDLE && (
-          <div className="intro-section">
-            <h2 className="intro-title">
+          <div className="text-center mb-12 animate-fade-in-down">
+            <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
               Is your plant sick?
             </h2>
-            <p className="intro-subtitle">
+            <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
               Upload a photo or use your camera to scan your plant. Our AI will instantly diagnose diseases and suggest treatments.
             </p>
           </div>
         )}
 
-        <div style={{ width: '100%' }}>
+        <div className="space-y-8">
           
           {/* Camera Modal Overlay */}
           {showCamera && (
-            <div className="modal-overlay">
+            <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 animate-in fade-in duration-200">
               <WebcamCapture 
                 onCapture={handleCameraCapture} 
                 onClose={() => setShowCamera(false)} 
@@ -85,70 +85,72 @@ const App: React.FC = () => {
 
           {/* Upload / Selection Area */}
           {appState === AppState.IDLE && !showCamera && (
-            <div className="action-grid">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
               {/* Upload Card */}
-              <label className="action-card upload">
+              <label className="relative group cursor-pointer">
                 <input 
                   type="file" 
                   className="hidden" 
                   accept="image/*" 
                   onChange={handleImageSelect} 
                 />
-                <div className="icon-circle">
-                  <Upload className="w-8 h-8" />
+                <div className="h-64 rounded-2xl border-2 border-dashed border-green-300 bg-white flex flex-col items-center justify-center p-6 transition-all duration-300 group-hover:border-green-500 group-hover:shadow-lg group-hover:bg-green-50/50">
+                  <div className="bg-green-100 p-4 rounded-full mb-4 group-hover:bg-green-200 transition-colors">
+                    <Upload className="w-8 h-8 text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">Upload Photo</h3>
+                  <p className="text-sm text-gray-500 text-center">Select an image from your device</p>
                 </div>
-                <h3>Upload Photo</h3>
-                <p>Select an image from your device</p>
               </label>
 
               {/* Camera Card */}
               <button 
                 onClick={() => setShowCamera(true)}
-                className="action-card camera"
+                className="relative group h-64 rounded-2xl border-2 border-dashed border-blue-300 bg-white flex flex-col items-center justify-center p-6 transition-all duration-300 hover:border-blue-500 hover:shadow-lg hover:bg-blue-50/50 cursor-pointer"
               >
-                <div className="icon-circle">
-                  <Camera className="w-8 h-8" />
+                <div className="bg-blue-100 p-4 rounded-full mb-4 group-hover:bg-blue-200 transition-colors">
+                  <Camera className="w-8 h-8 text-blue-600" />
                 </div>
-                <h3>Take Photo</h3>
-                <p>Use your webcam or camera</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">Take Photo</h3>
+                <p className="text-sm text-gray-500 text-center">Use your webcam or camera</p>
               </button>
             </div>
           )}
 
           {/* Processing State */}
           {appState === AppState.ANALYZING && (
-            <div className="processing-state">
-              <div className="processing-image-container">
+            <div className="flex flex-col items-center justify-center py-12 animate-pulse">
+              <div className="relative">
                 {selectedImage && (
                   <img 
                     src={selectedImage} 
                     alt="Analyzing" 
-                    className="processing-img"
+                    className="w-48 h-48 object-cover rounded-2xl shadow-lg opacity-50"
                   />
                 )}
-                <div className="spinner-overlay">
-                  <Loader2 className="spinner" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Loader2 className="w-12 h-12 text-green-600 animate-spin" />
                 </div>
               </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 500, color: 'var(--gray-900)' }}>Analyzing Plant Health...</h3>
-              <p style={{ color: 'var(--gray-500)', marginTop: '0.5rem' }}>Identifying potential diseases and remedies</p>
+              <h3 className="mt-6 text-xl font-medium text-gray-900">Analyzing Plant Health...</h3>
+              <p className="mt-2 text-gray-500">Identifying potential diseases and remedies</p>
             </div>
           )}
 
           {/* Results State */}
           {appState === AppState.SUCCESS && result && (
-            <div className="results-grid">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Left Column: Image */}
-              <div style={{gridColumn: 'span 1'}}>
-                <div className="preview-card">
+              <div className="lg:col-span-1 space-y-4">
+                <div className="bg-white p-3 rounded-2xl shadow-sm border border-gray-200">
                   {selectedImage && (
                     <img 
                       src={selectedImage} 
                       alt="Analyzed plant" 
-                      className="preview-img" 
+                      className="w-full h-auto rounded-xl object-cover shadow-inner" 
                     />
                   )}
-                  <div className="preview-label">
+                  <div className="mt-3 flex items-center justify-center text-sm text-gray-500">
                     <ImageIcon className="w-4 h-4 mr-2" />
                     <span>Original Capture</span>
                   </div>
@@ -156,7 +158,7 @@ const App: React.FC = () => {
               </div>
 
               {/* Right Column: Results */}
-              <div style={{gridColumn: 'span 1'}}>
+              <div className="lg:col-span-2">
                 <AnalysisResults result={result} onRetake={resetApp} />
               </div>
             </div>
@@ -164,13 +166,13 @@ const App: React.FC = () => {
 
           {/* Error State */}
           {appState === AppState.ERROR && (
-            <div className="error-state">
-              <AlertCircle className="error-icon" style={{margin: '0 auto 1rem auto'}} />
-              <h3 className="error-title">Analysis Failed</h3>
-              <p className="error-msg">{error}</p>
+            <div className="max-w-lg mx-auto bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
+              <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+              <h3 className="text-lg font-bold text-red-900 mb-2">Analysis Failed</h3>
+              <p className="text-red-700 mb-6">{error}</p>
               <button 
                 onClick={resetApp}
-                className="btn-retry"
+                className="px-6 py-2 bg-white text-red-700 border border-red-300 font-medium rounded-lg hover:bg-red-50 transition-colors"
               >
                 Try Again
               </button>
@@ -180,8 +182,8 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      <footer className="app-footer">
-        <div className="container">
+      <footer className="bg-white border-t border-gray-200 mt-12 py-8">
+        <div className="max-w-7xl mx-auto px-4 text-center text-gray-400 text-sm">
           <p>&copy; {new Date().getFullYear()} FloraGuard AI. Powered by Google Gemini.</p>
         </div>
       </footer>

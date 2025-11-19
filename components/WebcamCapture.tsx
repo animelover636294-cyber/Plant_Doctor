@@ -9,6 +9,7 @@ interface WebcamCaptureProps {
 export const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onCapture, onClose }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isStreamActive, setIsStreamActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const startCamera = useCallback(async () => {
@@ -18,6 +19,7 @@ export const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onCapture, onClose
       });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        setIsStreamActive(true);
         setError(null);
       }
     } catch (err) {
@@ -31,6 +33,7 @@ export const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onCapture, onClose
       const stream = videoRef.current.srcObject as MediaStream;
       stream.getTracks().forEach(track => track.stop());
       videoRef.current.srcObject = null;
+      setIsStreamActive(false);
     }
   }, []);
 
@@ -60,13 +63,13 @@ export const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onCapture, onClose
   }, [startCamera, stopCamera]);
 
   return (
-    <div className="webcam-container">
+    <div className="relative bg-black rounded-xl overflow-hidden shadow-2xl w-full max-w-2xl mx-auto aspect-video">
       {error ? (
-        <div className="error-overlay">
-          <p style={{ marginBottom: '1rem' }}>{error}</p>
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4 text-center">
+          <p className="mb-4">{error}</p>
           <button 
             onClick={onClose}
-            className="control-btn"
+            className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition"
           >
             Close
           </button>
@@ -78,17 +81,17 @@ export const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onCapture, onClose
             ref={videoRef} 
             autoPlay 
             playsInline 
-            className="webcam-video"
+            className="w-full h-full object-cover"
           />
           
           {/* Hidden Canvas for processing */}
           <canvas ref={canvasRef} className="hidden" />
 
           {/* Controls Overlay */}
-          <div className="webcam-controls">
+          <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent flex justify-center items-center space-x-8">
             <button 
               onClick={onClose}
-              className="control-btn"
+              className="p-3 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition"
               title="Cancel"
             >
               <X className="w-6 h-6" />
@@ -96,16 +99,16 @@ export const WebcamCapture: React.FC<WebcamCaptureProps> = ({ onCapture, onClose
             
             <button 
               onClick={capture}
-              className="capture-btn-outer"
+              className="p-1 rounded-full border-4 border-white/50 hover:border-white hover:scale-105 transition duration-200"
             >
-              <div className="capture-btn-inner">
-                <Camera className="w-8 h-8" style={{color: 'var(--primary-green)'}} />
+              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+                <Camera className="w-8 h-8 text-green-600" />
               </div>
             </button>
 
              <button 
               onClick={startCamera}
-              className="control-btn"
+              className="p-3 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-sm transition"
               title="Restart Camera"
             >
               <RefreshCw className="w-6 h-6" />
