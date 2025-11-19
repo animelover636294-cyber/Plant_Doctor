@@ -1,0 +1,8 @@
+{
+  "name": "Plants_Doctor",
+  "description": "Instant plant disease detection and treatment recommendations powered by Gemini 2.5 Flash.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
