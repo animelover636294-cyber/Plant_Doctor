@@ -1,11 +1,20 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { PlantAnalysisResult } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 const MODEL_NAME = "gemini-2.5-flash";
 
 export const analyzePlantImage = async (base64Image: string): Promise<PlantAnalysisResult> => {
+  // 1. Validate API Key availability
+  // We access process.env.API_KEY dynamically to prevent top-level crashes
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    throw new Error("API_KEY_MISSING");
+  }
+
+  // 2. Initialize AI Client lazily
+  const ai = new GoogleGenAI({ apiKey });
+
+  // 3. Prepare image data
   // Strip the data URL prefix if present to get raw base64
   const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, "");
 
